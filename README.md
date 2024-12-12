@@ -9,7 +9,7 @@ ve bu veriler üzerinde analiz yapmayı mümkün kılan bir uygulamadır. Uygula
 farklı özellikler ve arayüzler sunar.
 
 Kullanıcı Modülü
-	-Geçmiş tahlillerin listelenmesi ve detaylarının görüntülenmesi.
+	-Geçmiş tahlillerin listelenmesi ve detaylarının görüntülenmesi.						
 	-Tahlil sonuçlarının (IgA, IgM, IgG, vb.) referans aralıklarıyla karşılaştırılması ve 
 	 düşük, normal, yüksek olarak renklendirilmiş gösterimi.
 	-Kullanıcı profil yönetimi: Kayıt olma, profil düzenleme ve şifre değiştirme.
