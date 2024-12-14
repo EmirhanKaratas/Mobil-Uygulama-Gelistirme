@@ -14,8 +14,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 const LoginSchema = Yup.object().shape({
-  email: Yup.string().email('Geçerli bir email girin').required('Email zorunludur'),
-  password: Yup.string().min(6, 'Şifre en az 6 karakter olmalıdır').required('Şifre zorunludur'),
+  email: Yup.string().email('Geçerli bir email girin').required('Email zorunludur!'),
+  password: Yup.string().min(6, 'Şifre en az 6 karakter olmalıdır').required('Şifre zorunludur!'),
 });
 
 const Login = () => {
@@ -109,9 +109,9 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: 25,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     color: '#007bff',
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
