@@ -18,14 +18,22 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().min(6, 'Şifre en az 6 karakter olmalıdır').required('Şifre zorunludur!'),
 });
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(LoginSchema),
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const onSubmit = (data) => {
-    Alert.alert('Giriş Başarılı', `Hoş geldin, ${data.email}`);
+    // Örnek kullanıcı adı ve şifre
+    const mockEmail = 'emirhan@gmail.com';
+    const mockPassword = '123456';
+
+    if (data.email === mockEmail && data.password === mockPassword) {
+      navigation.navigate('AdminPanel'); // Admin Paneline yönlendirme
+    } else {
+      Alert.alert('Hata', 'Kullanıcı adı veya şifre yanlış!');
+    }
   };
 
   return (
