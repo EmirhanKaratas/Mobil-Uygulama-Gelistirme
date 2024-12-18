@@ -1,11 +1,19 @@
 import React from 'react';
 import { View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from './components/Login';
+import AdminPanel from './components/AdminPanel';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={{ flex: 1 }}>
-      <Login />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+        <Stack.Screen name="AdminPanel" component={AdminPanel} options={{ title: 'Yönetici Paneli' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
