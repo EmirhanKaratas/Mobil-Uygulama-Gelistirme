@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/Login/Login';
 import AdminPanel from './src/screens/AdminPanel/AdminPanel';
 import SignIn from './src/screens/SignIn/SignIn';
-import Home from './src/screens/Home/Home';
+
 
 const Stack = createStackNavigator();
 
@@ -16,7 +16,7 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="AdminPanel" component={AdminPanel} options={{ title: 'Yönetici Paneli' }} />
         <Stack.Screen name="SignIn" component={SignIn} options={{ title: 'SignIn' }} />
-        <Stack.Screen name="Home" component={SignIn} options={{ title: 'Home' }} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

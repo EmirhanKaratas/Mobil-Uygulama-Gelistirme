@@ -50,7 +50,7 @@ export default function App({navigation}) {
                 >
                     <Image
                         style={styles.logo}
-                        source={require('../../../assets/login.png')}
+                        source={require('../../../assets/login.jpg')}
                     />
                     {/* Full name input field */}
                     <TextInput
