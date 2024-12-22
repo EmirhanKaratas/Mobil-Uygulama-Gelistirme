@@ -7,38 +7,74 @@ import { auth, db } from '../../firebase/config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
-export default function App({navigation}) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function App({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
+  // Kayıt Olma Linki
   const onFooterLinkPress = () => {
-    navigation.navigate('SignIn');
-  }
+    navigation.navigate('SignIn'); // Kayıt ol ekranına yönlendirme
+  };
 
+  // Giriş İşlemi
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');
-    } else {
-      Alert.alert('Başarılı', 'Hoşgeldiniz, ${email}');
+      return; // Eksik alan varsa işlemi durdur
     }
 
     try {
+      // Firebase Authentication ile giriş
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-
-      const userDoc = await getDoc(doc(db, 'users', uid));
-
-      if (!userDoc.exists()) {
-        alert("User does not exist anymore.");
+      console.log('Giriş Yapan Kullanıcının UID\'si:', uid);
+    
+      // Hem 'users' hem de 'doctors' koleksiyonlarında arama yapılacak
+      const userDocRef = doc(db, 'users', uid);
+      const doctorDocRef = doc(db, 'doctors', uid);
+    
+      // Kullanıcı bilgilerini al
+      const userDoc = await getDoc(userDocRef);
+      const doctorDoc = await getDoc(doctorDocRef);
+    
+      let userData;
+    
+      // Kullanıcı verilerini kontrol et
+      if (userDoc.exists()) {
+        console.log("Kullanıcı verisi bulundu:", userDoc.data());  // Konsola yazdırma
+        userData = userDoc.data();
+      } else if (doctorDoc.exists()) {
+        console.log("Doktor verisi bulundu:", doctorDoc.data());  // Konsola yazdırma
+        userData = doctorDoc.data();
+      } else {
+        console.log("Kullanıcı veya doktor verisi bulunamadı");
+      }
+    
+      // Kullanıcı bulunamazsa
+      if (!userData) {
+        Alert.alert('Hata', 'Kullanıcı bulunamadı!');
         return;
       }
-      const userData = userDoc.data();
-      await AsyncStorage.setItem('user', JSON.stringify(userData));  // Save user data
-      navigation.navigate('Home', { user: userData });
+    
+      // Kullanıcı verilerini AsyncStorage'a kaydet
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+    
+      // Kullanıcının rolünü kontrol et
+      if (userData.role === 'doctor') {
+        // Doctor ise AdminPanel'e yönlendir
+        navigation.navigate('AdminPanel', { user: userData });
+      } else {
+        // Diğer kullanıcıyı beklemede tut
+        Alert.alert('Yetkisiz Giriş', 'Bu hesap yönetici yetkisine sahip değil.');
+      }
+    
     } catch (error) {
-      alert(error.message);
+      // Hata durumunda kullanıcıyı bilgilendir
+      console.log(error); // Error objesini konsola yazdırın
+      Alert.alert('Giriş Hatası', error.message || error.toString());
     }
-
+    
+    
   };
 
   return (
@@ -51,7 +87,7 @@ export default function App({navigation}) {
           style={styles.background}
           resizeMode="cover"
         >
-          {/* Logo ve Login Text */}
+          {/* Logo ve Login Başlığı */}
           <View style={styles.logoContainer}>
             <Image
               source={require('../../../assets/images/loginlogo.png')}
@@ -82,10 +118,10 @@ export default function App({navigation}) {
               onChangeText={(text) => setPassword(text)}
             />
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Log in</Text>
+              <Text style={styles.buttonText}>Giriş Yap</Text>
             </TouchableOpacity>
             <View style={styles.footerView}>
-              <Text style={styles.footerText}>Don't have an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign up</Text></Text>
+              <Text style={styles.footerText}>Hesabınız yok mu? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Kayıt Ol</Text></Text>
             </View>
           </View>
         </ImageBackground>

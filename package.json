@@ -10,6 +10,7 @@
     "expo": "~52.0.20",
     "expo-linear-gradient": "^14.0.1",
     "firebase": "^11.1.0",
+    "firebase-admin": "^13.0.2",
     "react-hook-form": "^7.54.1",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
