@@ -27,8 +27,14 @@ export default function App({ navigation }) {
       // Firebase Authentication ile giriş
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
+
+     
       console.log('Giriş Yapan Kullanıcının UID\'si:', uid);
-    
+        // Token'ı yenile
+      //const userToken = await userCredential.user.getIdToken(true); // 'true' yeni token alır
+      //console.log('Yeni Token:', userToken);
+
+      const userToken = await userCredential.user.getIdToken(true);
       // Hem 'users' hem de 'doctors' koleksiyonlarında arama yapılacak
       const userDocRef = doc(db, 'users', uid);
       const doctorDocRef = doc(db, 'doctors', uid);
@@ -46,6 +52,7 @@ export default function App({ navigation }) {
       } else if (doctorDoc.exists()) {
         console.log("Doktor verisi bulundu:", doctorDoc.data());  // Konsola yazdırma
         userData = doctorDoc.data();
+        console.log(userData.role);
       } else {
         console.log("Kullanıcı veya doktor verisi bulunamadı");
       }
@@ -70,7 +77,9 @@ export default function App({ navigation }) {
     
     } catch (error) {
       // Hata durumunda kullanıcıyı bilgilendir
-      console.log(error); // Error objesini konsola yazdırın
+      
+      console.log('Error:', error.message || error.toString());
+      
       Alert.alert('Giriş Hatası', error.message || error.toString());
     }
     

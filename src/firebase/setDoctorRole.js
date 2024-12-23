@@ -1,5 +1,3 @@
-// setDoctorRole.js dosyası
-
 const admin = require('firebase-admin');
 const serviceAccount = require('../firebase/fir-mobile-project-4830f-firebase-adminsdk-mfaup-afcd49cb85.json');  // Firebase Service Account Key dosyasının yolu
 
@@ -13,11 +11,23 @@ const setDoctorRole = async (uid) => {
   try {
     // Kullanıcıya 'doctor' rolü ekle
     await admin.auth().setCustomUserClaims(uid, { role: 'doctor' });
-    console.log('Role successfully added');
+    console.log(`Doktor rolü ${uid} kullanıcısına başarıyla eklendi`);
   } catch (error) {
-    console.error('Error setting custom claim', error);
+    console.error(`Hata ${uid} kullanıcısı için rol eklerken:`, error);
   }
 };
 
-// Örnek: Doktor UID'si ile role ekle
-setDoctorRole('6VXdVbhlTcX5C3RlMVrQcnk9r5v1');  // Burada UID'yi kendi doktor kullanıcı UID'niz ile değiştirin
+// Birden fazla kullanıcıya rol ekleme
+const addRolesToMultipleUsers = () => {
+  const uids = [
+    '6VXdVbhlTcX5C3RlMVrQcnk9r5v1',  // Birinci doktor UID
+    'TfkaE7lgDCSzcyaXlUVW6L7saG52'   // İkinci doktor UID
+  ];
+
+  uids.forEach(uid => {
+    setDoctorRole(uid);  // Her bir kullanıcı için setDoctorRole fonksiyonunu çağır
+  });
+};
+
+// Kullanıcılara rol ekleme işlemi
+addRolesToMultipleUsers();
