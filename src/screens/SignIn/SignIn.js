@@ -8,32 +8,42 @@ import { doc, setDoc } from 'firebase/firestore';
 
 export default function App({navigation}) {
 
+    // Kullanıcının tam adını, e-postasını ve şifrelerini tutmak için state tanımları
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    // Kullanıcıyı giriş ekranına yönlendiren fonksiyon
     const onFooterLinkPress = () => {
         navigation.navigate('Login');
     };
 
+    // Kayıt işlemini gerçekleştiren asenkron fonksiyon
     const onRegisterPress = async () => {
+        // Şifrelerin eşleşip eşleşmediğini kontrol et
         if (password !== confirmPassword) {
             alert("Passwords don't match.");
             return;
         }
 
         try {
+            // Firebase Authentication ile kullanıcı oluştur
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const uid = userCredential.user.uid;
+
+            // Kullanıcı bilgilerini Firestore'a kaydet
             const data = {
                 id: uid,
                 email,
                 fullName,
             };
             await setDoc(doc(db, 'users', uid), data);
+
+            // Başarıyla kayıt olunduktan sonra ana sayfaya yönlendirme
             navigation.navigate('Home', { user: data });
         } catch (error) {
+            // Hata durumunda uyarı mesajı göster
             alert(error.message);
         }
     };
@@ -43,16 +53,18 @@ export default function App({navigation}) {
             <KeyboardAwareScrollView
                 style={{ flex: 1, width: '100%' }}
                 keyboardShouldPersistTaps="always">
+                {/* Arka plan resmi */}
                 <ImageBackground
                     source={require('../../../assets/images/loginbackground.png')}
                     style={styles.background}
                     resizeMode="cover"
                 >
+                    {/* Uygulama logosu */}
                     <Image
                         style={styles.logo}
                         source={require('../../../assets/login.jpg')}
                     />
-                    {/* Full name input field */}
+                    {/* Tam ad giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholder='Full Name'
@@ -62,7 +74,7 @@ export default function App({navigation}) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Email input field */}
+                    {/* E-posta giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholder='E-mail'
@@ -72,7 +84,7 @@ export default function App({navigation}) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Password input field */}
+                    {/* Şifre giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
@@ -83,7 +95,7 @@ export default function App({navigation}) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Confirm password input field */}
+                    {/* Şifre onay giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
@@ -94,13 +106,13 @@ export default function App({navigation}) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Register button */}
+                    {/* Kayıt ol butonu */}
                     <TouchableOpacity
                         style={styles.button}
                         onPress={onRegisterPress}>
                         <Text style={styles.buttonTitle}>Create account</Text>
                     </TouchableOpacity>
-                    {/* Footer link to navigate to the login screen */}
+                    {/* Giriş ekranına yönlendiren alt bilgi */}
                     <View style={styles.footerView}>
                         <Text style={styles.footerText}>Already got an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
                     </View>
