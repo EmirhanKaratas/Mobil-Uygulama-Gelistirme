@@ -27,6 +27,7 @@ export default function App({ navigation }) {
     try {
       // Firebase Authentication ile giriş yap
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+<<<<<<< HEAD
       const uid = userCredential.user.uid; // Giriş yapan kullanıcının UID'sini al
       console.log('Giriş Yapan Kullanıcının UID\'si:', uid);
 
@@ -34,6 +35,21 @@ export default function App({ navigation }) {
       const userDocRef = doc(db, 'users', uid); // Kullanıcı koleksiyon referansı
       const doctorDocRef = doc(db, 'doctors', uid); // Doktor koleksiyon referansı
 
+=======
+      const uid = userCredential.user.uid;
+
+     
+      console.log('Giriş Yapan Kullanıcının UID\'si:', uid);
+        // Token'ı yenile
+      //const userToken = await userCredential.user.getIdToken(true); // 'true' yeni token alır
+      //console.log('Yeni Token:', userToken);
+
+      const userToken = await userCredential.user.getIdToken(true);
+      // Hem 'users' hem de 'doctors' koleksiyonlarında arama yapılacak
+      const userDocRef = doc(db, 'users', uid);
+      const doctorDocRef = doc(db, 'doctors', uid);
+    
+>>>>>>> c37f79001af65d2ca6a328ec1191e23e9a6cde75
       // Kullanıcı bilgilerini al
       const userDoc = await getDoc(userDocRef);
       const doctorDoc = await getDoc(doctorDocRef);
@@ -47,6 +63,7 @@ export default function App({ navigation }) {
       } else if (doctorDoc.exists()) {
         console.log("Doktor verisi bulundu:", doctorDoc.data());  // Doktor verisini konsola yazdır
         userData = doctorDoc.data();
+        console.log(userData.role);
       } else {
         console.log("Kullanıcı veya doktor verisi bulunamadı");
       }
@@ -70,8 +87,15 @@ export default function App({ navigation }) {
       }
 
     } catch (error) {
+<<<<<<< HEAD
       // Giriş sırasında hata oluşursa, hata mesajını kullanıcıya göster
       console.log(error); // Hata detayını konsola yazdır
+=======
+      // Hata durumunda kullanıcıyı bilgilendir
+      
+      console.log('Error:', error.message || error.toString());
+      
+>>>>>>> c37f79001af65d2ca6a328ec1191e23e9a6cde75
       Alert.alert('Giriş Hatası', error.message || error.toString());
     }
   };
