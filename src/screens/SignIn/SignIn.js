@@ -14,21 +14,30 @@ const isValidEmail = (email) => {
 
 export default function App({ navigation }) {
 
+    // Kullanıcının tam adını, e-postasını ve şifrelerini tutmak için state tanımları
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    // Kullanıcıyı giriş ekranına yönlendiren fonksiyon
     const onFooterLinkPress = () => {
         navigation.navigate('Login');
     };
 
+    // Kayıt işlemini gerçekleştiren asenkron fonksiyon
     const onRegisterPress = async () => {
+<<<<<<< HEAD
         // E-posta geçerliliğini kontrol et
         if (!isValidEmail(email)) {
             console.log(error);
             Alert.alert("Hata", "Geçerli bir e-posta adresi giriniz.");
             
+=======
+        // Şifrelerin eşleşip eşleşmediğini kontrol et
+        if (password !== confirmPassword) {
+            alert("Passwords don't match.");
+>>>>>>> 8f913d0f0a3d0d2b7d7de40888e3ba37216d42d1
             return;
         }
 
@@ -40,8 +49,11 @@ export default function App({ navigation }) {
 
         // Kullanıcıyı Firebase Authentication ile oluştur
         try {
+            // Firebase Authentication ile kullanıcı oluştur
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const uid = userCredential.user.uid;
+
+            // Kullanıcı bilgilerini Firestore'a kaydet
             const data = {
                 id: uid,
                 email,
@@ -51,10 +63,19 @@ export default function App({ navigation }) {
 
             // Kullanıcı verisini Firestore'a kaydet
             await setDoc(doc(db, 'users', uid), data);
+<<<<<<< HEAD
             navigation.navigate('Login', { user: data });
         } catch (error) {
             // Hata mesajını göster
             Alert.alert("Kayıt Hatası", error.message);
+=======
+
+            // Başarıyla kayıt olunduktan sonra ana sayfaya yönlendirme
+            navigation.navigate('Home', { user: data });
+        } catch (error) {
+            // Hata durumunda uyarı mesajı göster
+            alert(error.message);
+>>>>>>> 8f913d0f0a3d0d2b7d7de40888e3ba37216d42d1
         }
     };
 
@@ -63,16 +84,18 @@ export default function App({ navigation }) {
             <KeyboardAwareScrollView
                 style={{ flex: 1, width: '100%' }}
                 keyboardShouldPersistTaps="always">
+                {/* Arka plan resmi */}
                 <ImageBackground
                     source={require('../../../assets/images/loginbackground.png')}
                     style={styles.background}
                     resizeMode="cover"
                 >
+                    {/* Uygulama logosu */}
                     <Image
                         style={styles.logo}
                         source={require('../../../assets/login.jpg')}
                     />
-                    {/* Full name input field */}
+                    {/* Tam ad giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholder='Full Name'
@@ -82,7 +105,7 @@ export default function App({ navigation }) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Email input field */}
+                    {/* E-posta giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholder='E-mail'
@@ -92,7 +115,7 @@ export default function App({ navigation }) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Password input field */}
+                    {/* Şifre giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
@@ -103,7 +126,7 @@ export default function App({ navigation }) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Confirm password input field */}
+                    {/* Şifre onay giriş alanı */}
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
@@ -114,13 +137,13 @@ export default function App({ navigation }) {
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Register button */}
+                    {/* Kayıt ol butonu */}
                     <TouchableOpacity
                         style={styles.button}
                         onPress={onRegisterPress}>
                         <Text style={styles.buttonTitle}>Create account</Text>
                     </TouchableOpacity>
-                    {/* Footer link to navigate to the login screen */}
+                    {/* Giriş ekranına yönlendiren alt bilgi */}
                     <View style={styles.footerView}>
                         <Text style={styles.footerText}>Already got an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
                     </View>
