@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View, ImageBackground } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View, ImageBackground, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
-export default function App({navigation}) {
+// E-posta formatını kontrol etmek için fonksiyon
+const isValidEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return regex.test(email);
+};
+
+export default function App({ navigation }) {
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -18,11 +24,21 @@ export default function App({navigation}) {
     };
 
     const onRegisterPress = async () => {
-        if (password !== confirmPassword) {
-            alert("Passwords don't match.");
+        // E-posta geçerliliğini kontrol et
+        if (!isValidEmail(email)) {
+            console.log(error);
+            Alert.alert("Hata", "Geçerli bir e-posta adresi giriniz.");
+            
             return;
         }
 
+        // Şifrelerin uyuşup uyuşmadığını kontrol et
+        if (password !== confirmPassword) {
+            Alert.alert("Hata", "Şifreler uyuşmuyor.");
+            return;
+        }
+
+        // Kullanıcıyı Firebase Authentication ile oluştur
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const uid = userCredential.user.uid;
@@ -30,11 +46,15 @@ export default function App({navigation}) {
                 id: uid,
                 email,
                 fullName,
+                role: 'user',
             };
+
+            // Kullanıcı verisini Firestore'a kaydet
             await setDoc(doc(db, 'users', uid), data);
-            navigation.navigate('Home', { user: data });
+            navigation.navigate('Login', { user: data });
         } catch (error) {
-            alert(error.message);
+            // Hata mesajını göster
+            Alert.alert("Kayıt Hatası", error.message);
         }
     };
 
