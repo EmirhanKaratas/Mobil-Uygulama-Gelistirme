@@ -27,17 +27,11 @@ export default function App({ navigation }) {
 
     // Kayıt işlemini gerçekleştiren asenkron fonksiyon
     const onRegisterPress = async () => {
-<<<<<<< HEAD
         // E-posta geçerliliğini kontrol et
         if (!isValidEmail(email)) {
             console.log(error);
             Alert.alert("Hata", "Geçerli bir e-posta adresi giriniz.");
             
-=======
-        // Şifrelerin eşleşip eşleşmediğini kontrol et
-        if (password !== confirmPassword) {
-            alert("Passwords don't match.");
->>>>>>> 8f913d0f0a3d0d2b7d7de40888e3ba37216d42d1
             return;
         }
 
@@ -63,19 +57,10 @@ export default function App({ navigation }) {
 
             // Kullanıcı verisini Firestore'a kaydet
             await setDoc(doc(db, 'users', uid), data);
-<<<<<<< HEAD
             navigation.navigate('Login', { user: data });
         } catch (error) {
             // Hata mesajını göster
             Alert.alert("Kayıt Hatası", error.message);
-=======
-
-            // Başarıyla kayıt olunduktan sonra ana sayfaya yönlendirme
-            navigation.navigate('Home', { user: data });
-        } catch (error) {
-            // Hata durumunda uyarı mesajı göster
-            alert(error.message);
->>>>>>> 8f913d0f0a3d0d2b7d7de40888e3ba37216d42d1
         }
     };
 
@@ -141,11 +126,11 @@ export default function App({ navigation }) {
                     <TouchableOpacity
                         style={styles.button}
                         onPress={onRegisterPress}>
-                        <Text style={styles.buttonTitle}>Create account</Text>
+                        <Text style={styles.buttonTitle}>Hesap Oluştur</Text>
                     </TouchableOpacity>
                     {/* Giriş ekranına yönlendiren alt bilgi */}
                     <View style={styles.footerView}>
-                        <Text style={styles.footerText}>Already got an account? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
+                        <Text style={styles.footerText}>Hesap oluşturmaya hazır mısınız? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
                     </View>
                 </ImageBackground>
             </KeyboardAwareScrollView>

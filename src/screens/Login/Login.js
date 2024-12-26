@@ -27,15 +27,6 @@ export default function App({ navigation }) {
     try {
       // Firebase Authentication ile giriş yap
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-<<<<<<< HEAD
-      const uid = userCredential.user.uid; // Giriş yapan kullanıcının UID'sini al
-      console.log('Giriş Yapan Kullanıcının UID\'si:', uid);
-
-      // Kullanıcı verisi kontrolü için hem 'users' hem de 'doctors' koleksiyonlarını kontrol et
-      const userDocRef = doc(db, 'users', uid); // Kullanıcı koleksiyon referansı
-      const doctorDocRef = doc(db, 'doctors', uid); // Doktor koleksiyon referansı
-
-=======
       const uid = userCredential.user.uid;
 
      
@@ -49,7 +40,6 @@ export default function App({ navigation }) {
       const userDocRef = doc(db, 'users', uid);
       const doctorDocRef = doc(db, 'doctors', uid);
     
->>>>>>> c37f79001af65d2ca6a328ec1191e23e9a6cde75
       // Kullanıcı bilgilerini al
       const userDoc = await getDoc(userDocRef);
       const doctorDoc = await getDoc(doctorDocRef);
@@ -87,15 +77,10 @@ export default function App({ navigation }) {
       }
 
     } catch (error) {
-<<<<<<< HEAD
-      // Giriş sırasında hata oluşursa, hata mesajını kullanıcıya göster
-      console.log(error); // Hata detayını konsola yazdır
-=======
       // Hata durumunda kullanıcıyı bilgilendir
       
       console.log('Error:', error.message || error.toString());
       
->>>>>>> c37f79001af65d2ca6a328ec1191e23e9a6cde75
       Alert.alert('Giriş Hatası', error.message || error.toString());
     }
   };

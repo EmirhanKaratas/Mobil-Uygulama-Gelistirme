@@ -20,8 +20,8 @@ const setDoctorRole = async (uid) => {
 // Birden fazla kullanıcıya rol ekleme
 const addRolesToMultipleUsers = () => {
   const uids = [
-    '6VXdVbhlTcX5C3RlMVrQcnk9r5v1',  // Birinci doktor UID
-    'TfkaE7lgDCSzcyaXlUVW6L7saG52'   // İkinci doktor UID
+    '6VXdVbhlTcX5C3RlMVrQcnk9r5v1',  // Birinci doktor UID Admin1
+    'TfkaE7lgDCSzcyaXlUVW6L7saG52'   // İkinci doktor UID Admin2
   ];
 
   uids.forEach(uid => {
