@@ -71,16 +71,18 @@ export default function App({ navigation }) {
       if (userData.role === 'doctor') {
         // Eğer kullanıcı doktor ise AdminPanel ekranına yönlendir
         navigation.navigate('AdminPanel', { user: userData });
+      } else if (userData.role === 'user') {
+        // Eğer kullanıcı hasta ise UserPanel ekranına yönlendir
+        navigation.navigate('UserPanel', { user: userData });
       } else {
-        // Kullanıcı doktor değilse yetkisiz giriş uyarısı göster
-        Alert.alert('Yetkisiz Giriş', 'Bu hesap yönetici yetkisine sahip değil.');
+        // Rol tanımlanmamışsa hata mesajı göster
+        Alert.alert('Hata', 'Kullanıcı rolü tanımlanmamış.');
       }
 
     } catch (error) {
       // Hata durumunda kullanıcıyı bilgilendir
-      
+      //console.log('Error:', error.message || error.toString());
       console.log('Error:', error.message || error.toString());
-      
       Alert.alert('Giriş Hatası', error.message || error.toString());
     }
   };
