@@ -26,7 +26,7 @@ const setHastaRole = async (uid) => {
   }
 };
 
-// Kullanıcı listeleri
+// Kullanıcı listeleri doktor ve hasta
 const doctorUIDs = [
   '6VXdVbhlTcX5C3RlMVrQcnk9r5v1',
   'TfkaE7lgDCSzcyaXlUVW6L7saG52',

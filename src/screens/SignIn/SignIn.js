@@ -130,7 +130,7 @@ export default function App({ navigation }) {
                     </TouchableOpacity>
                     {/* Giriş ekranına yönlendiren alt bilgi */}
                     <View style={styles.footerView}>
-                        <Text style={styles.footerText}>Hesap oluşturmaya hazır mısınız? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Log in</Text></Text>
+                        <Text style={styles.footerText}>Hesap oluşturmaya hazır mısınız? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text></Text>
                     </View>
                 </ImageBackground>
             </KeyboardAwareScrollView>

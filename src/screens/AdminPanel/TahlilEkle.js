@@ -4,7 +4,7 @@ import React from 'react'
 export default function TahlilEkle() {
   return (
     <View>
-      <Text>TahlilEkle</Text>
+      <Text>Tahlil Ekle</Text>
     </View>
   )
 }
