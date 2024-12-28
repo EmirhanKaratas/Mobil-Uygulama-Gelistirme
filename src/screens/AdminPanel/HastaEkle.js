@@ -6,6 +6,8 @@ import { collection, addDoc } from 'firebase/firestore';
 const HastaEkle = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [yas, setYas]=useState('');
+  const [cinsiyet, setCinsiyet]=useState('');
 
   // Veritabanına hasta eklemek için fonksiyon
   const handleAddPatient = async () => {
@@ -19,7 +21,9 @@ const HastaEkle = () => {
       const docRef = await addDoc(collection(db, 'users'), {
         fullName,
         email,
-        role: 'user', // role alanı ekleniyor
+        role: 'user',
+        cinsiyet,
+        yas, // role alanı ekleniyor
       });
 
       // Eklenen hastanın id'si Firestore tarafından otomatik olarak verilecektir
@@ -30,6 +34,8 @@ const HastaEkle = () => {
       // Formu sıfırlama
       setFullName('');
       setEmail('');
+      setCinsiyet('');
+      setYas('');
     } catch (error) {
       console.error('Hasta eklenirken hata oluştu: ', error);
       Alert.alert('Hata', 'Bir hata oluştu, tekrar deneyin');
@@ -51,10 +57,14 @@ const HastaEkle = () => {
         style={styles.input}
         placeholder="Yaş"
         keyboardType="numeric"
+        value={yas}
+        onChangeText={setYas}
       />
       <TextInput
         style={styles.input}
         placeholder="Cinsiyet"
+        value={cinsiyet}
+        onChangeText={setCinsiyet}
       />
       <TextInput
         style={styles.input}

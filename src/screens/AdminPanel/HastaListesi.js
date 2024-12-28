@@ -2,33 +2,57 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { db } from '../../firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
 const HastaListesi = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
 
     // Tüm hastaları çekme
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const usersRef = collection(db, 'users'); // 'patients' koleksiyonundan veri al
+                const usersRef = collection(db, 'users');
                 const querySnapshot = await getDocs(usersRef);
 
                 const usersList = [];
                 querySnapshot.forEach((doc) => {
-                    usersList.push({ id: doc.id, ...doc.data() }); // Verileri kaydet
+                    usersList.push({ id: doc.id, ...doc.data() });
                 });
 
-                setUsers(usersList); // Hastaları state'e kaydet
+                setUsers(usersList);
             } catch (error) {
                 console.error('Hata:', error);
             } finally {
-                setLoading(false); // Yükleme işlemi tamamlandığında loading'i false yap
+                setLoading(false);
             }
         };
 
         fetchUsers();
     }, []);
+
+    const tahlilleriGoruntule = (hasta) => {
+        navigation.navigate('Tahliller', {
+            hastaId: hasta.id,
+            hastaAdi: hasta.fullName
+        });
+    };
+
+    const renderHastaItem = ({ item }) => (
+        <View style={styles.hastaCard}>
+            <View style={styles.hastaInfo}>
+                <Text style={styles.hastaAdi}>{item.fullName}</Text>
+                <Text style={styles.hastaBilgi}>Email: {item.email}</Text>
+            </View>
+            <TouchableOpacity
+                style={styles.tahlilButton}
+                onPress={() => tahlilleriGoruntule(item)}
+            >
+                <Text style={styles.buttonText}>Tahliller</Text>
+            </TouchableOpacity>
+        </View>
+    );
 
     if (loading) {
         return (
@@ -38,70 +62,69 @@ const HastaListesi = () => {
         );
     }
 
-    const renderPatient = ({ item }) => (
-        <View style={styles.patientCard}>
-            <View style={styles.patientInfo}>
-                <Text style={styles.patientName}>{item.fullName}</Text>
-                {/* Diğer hasta bilgilerini ekleyebilirsiniz */}
-            </View>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Tahliller</Text>
-            </TouchableOpacity>
-        </View>
-    );
-
     return (
-        <FlatList
-            data={users}
-            keyExtractor={(item) => item.id}
-            renderItem={renderPatient}
-            contentContainerStyle={styles.list}
-        />
+        <View style={styles.container}>
+            <FlatList
+                data={users}
+                renderItem={renderHastaItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContainer}
+            />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    listContainer: {
+        padding: 16,
+    },
     loader: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    list: {
-        padding: 10,
-    },
-    patientCard: {
-        backgroundColor: '#f8f8f8',
-        padding: 15,
-        marginVertical: 8,
+    hastaCard: {
+        backgroundColor: 'white',
         borderRadius: 8,
-        shadowColor: 'gray',
+        padding: 16,
+        marginBottom: 16,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 1 },
-        shadowRadius: 3,
-        elevation: 3,
-        flexDirection: 'row', // Hasta adı ve buton yan yana
-        justifyContent: 'space-between', // Butonun sağa yaslanması
-        alignItems: 'center',
+        shadowRadius: 4,
     },
-    patientInfo: {
-        flex: 1, // Adın ve diğer bilgilerin yatayda genişlemesi için
+    hastaInfo: {
+        flex: 1,
     },
-    patientName: {
-        fontSize: 18,
+    hastaAdi: {
+        fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 5,
+        color: '#333',
+        marginBottom: 4,
     },
-    button: {
-        backgroundColor: '#4CAF50', // Butonun arka plan rengi
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
+    hastaBilgi: {
+        fontSize: 14,
+        color: '#666',
+    },
+    tahlilButton: {
+        backgroundColor: '#2196F3',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 6,
+        marginLeft: 16,
     },
     buttonText: {
-        color: '#fff', // Buton metninin rengi
-        fontWeight: 'bold',
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '500',
     },
 });
 

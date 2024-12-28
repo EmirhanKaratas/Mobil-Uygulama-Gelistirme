@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import HastaListesi from './HastaListesi';
 import TahlilEkle from './TahlilEkle';
 import HastaEkle from './HastaEkle';
+import Tahliller from './Tahliller';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -111,10 +112,16 @@ export default function AdminPanel() {
         options={{ title: 'Tahlil Ekle', headerShown: false }}
       />
       <Stack.Screen
-      name="HastaEkle"
-      component={HastaEkle}
-      options={{ title: 'Hasta Ekle', headerShown: false }}
-    />
+        name="Tahliller"
+        component={Tahliller}
+        options={{ title: 'Tahlil Sonuçları', headerShown: false }}
+      />
+      
+      <Stack.Screen
+        name="HastaEkle"
+        component={HastaEkle}
+        options={{ title: 'Hasta Ekle', headerShown: false }}
+      />
     </Stack.Navigator>
   );
 
@@ -125,6 +132,7 @@ export default function AdminPanel() {
     >
       <Drawer.Screen name="Hasta Listesi" component={HomeStack} />
       <Drawer.Screen name="Tahlil Ekle" component={TahlilEkle} />
+      {/*<Drawer.Screen name="Tahlil Sonuçları" component={Tahliller} />*/}
       <Drawer.Screen name="Hasta Ekle" component={HastaEkle} />
     </Drawer.Navigator>
   );

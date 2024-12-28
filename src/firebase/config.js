@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { getReactNativePersistence, initializeAuth, getAuth } from 'firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFirestore, collection } from 'firebase/firestore';
 
@@ -18,9 +18,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Auth with AsyncStorage persistence
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+let auth;
+try {
+  auth = getAuth(app);
+} catch (error) {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+}
 
 // Initialize Firestore
 export const db = getFirestore(app);
@@ -29,3 +34,6 @@ export const db = getFirestore(app);
 export const usersRef = collection(db, 'users');
 export const doctorsRef = collection(db, 'doctors');  // Örnek başka koleksiyon
 export const roomRef = collection(db, 'rooms');  // Eğer 'rooms' koleksiyonunu kullanmak istiyorsanız
+export const tahlillerRef = collection(db, 'tahliller');
+
+export { auth, app };
