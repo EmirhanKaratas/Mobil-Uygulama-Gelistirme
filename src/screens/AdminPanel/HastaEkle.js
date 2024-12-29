@@ -1,44 +1,72 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { db } from '../../firebase/config';
-import { collection, addDoc } from 'firebase/firestore';
+import { db, auth } from '../../firebase/config'; // Firebase Auth ve Firestore import
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
-const HastaEkle = () => {
+// E-posta formatını kontrol etmek için fonksiyon
+const isValidEmail = (email) => {
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return regex.test(email);
+};
+
+const HastaEkle = ({ navigation }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [yas, setYas]=useState('');
-  const [cinsiyet, setCinsiyet]=useState('');
+  const [yas, setYas] = useState('');
+  const [cinsiyet, setCinsiyet] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Veritabanına hasta eklemek için fonksiyon
+  // Kullanıcı kaydını ve Firestore'a eklemeyi gerçekleştiren fonksiyon
   const handleAddPatient = async () => {
-    if (!fullName || !email) {
+    if (!fullName || !email || !password || !confirmPassword) {
       Alert.alert('Eksik Alan', 'Lütfen tüm alanları doldurun');
       return;
     }
 
+    if (!isValidEmail(email)) {
+      Alert.alert('Hata', 'Geçerli bir e-posta adresi girin.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Hata', 'Şifreler uyuşmuyor.');
+      return;
+    }
+
     try {
-      // Firestore'da 'users' koleksiyonuna yeni hasta ekleme
-      const docRef = await addDoc(collection(db, 'users'), {
+      // Firebase Authentication ile kullanıcıyı oluştur
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Kullanıcı bilgilerini Firestore'a kaydet
+      const userData = {
         fullName,
         email,
-        role: 'user',
+        yas,
         cinsiyet,
-        yas, // role alanı ekleniyor
-      });
+        role: 'user', // 'user' rolü ile
+        uid: user.uid, // Firebase Authentication UID
+      };
 
-      // Eklenen hastanın id'si Firestore tarafından otomatik olarak verilecektir
-      console.log("Yeni Hasta Eklendi, ID:", docRef.id);
+      // Firestore'a kullanıcı verisini ekle
+      await setDoc(doc(db, 'users', user.uid), userData);
 
+      // Başarı mesajı
       Alert.alert('Başarılı', 'Hasta başarıyla eklendi!');
+      navigation.navigate('HastaListesi'); // Login ekranına yönlendirme
 
       // Formu sıfırlama
       setFullName('');
       setEmail('');
-      setCinsiyet('');
       setYas('');
+      setCinsiyet('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (error) {
       console.error('Hasta eklenirken hata oluştu: ', error);
-      Alert.alert('Hata', 'Bir hata oluştu, tekrar deneyin');
+      Alert.alert('Hata', error.message);
     }
   };
 
@@ -59,6 +87,20 @@ const HastaEkle = () => {
         keyboardType="numeric"
         value={yas}
         onChangeText={setYas}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Şifre"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Şifreyi Onayla"
+        secureTextEntry={true}
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
       <TextInput
         style={styles.input}
@@ -88,17 +130,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
   },
   logo: {
-    width: 150, // Resmin genişliği
-    height: 150, // Resmin yüksekliği
-    resizeMode: 'contain', // Resmi oranlı şekilde yerleştir
-    alignSelf: 'center', // Resmi ortala
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+    alignSelf: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333', // Başlık rengi
+    color: '#333',
   },
   input: {
     height: 50,
@@ -109,7 +151,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     fontSize: 16,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
   },
   button: {
     backgroundColor: '#4CAF50',
@@ -118,7 +160,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
   },
   buttonText: {
     color: '#fff',
