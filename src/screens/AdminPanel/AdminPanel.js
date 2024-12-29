@@ -34,15 +34,15 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const fetchDoctorData = async () => {
-      const currentUser = auth.currentUser; // Giriş yapan doktor
+      const currentUser = auth.currentUser; // Giriş yapan doktor icin
       if (currentUser) {
-        setDoctorEmail(currentUser.email); // Doktorun emailini kaydet
+        setDoctorEmail(currentUser.email); // Doktorun emailini kaydeder
 
         try {
           const doctorRef = doc(db, 'doctors', currentUser.uid);
           const doctorDoc = await getDoc(doctorRef);
           if (doctorDoc.exists()) {
-            setDoctorName(doctorDoc.data().fullname); // Doktor adını kaydet
+            setDoctorName(doctorDoc.data().fullname); // Doktor adını kaydeder
           } else {
             console.log('Doktor bulunamadı');
           }
@@ -55,7 +55,7 @@ export default function AdminPanel() {
     fetchDoctorData();
   }, []);
 
-  // Tüm kullanıcıları çekme
+  // Tüm kullanıcıları çekmek icin
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
