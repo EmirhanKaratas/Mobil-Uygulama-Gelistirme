@@ -103,7 +103,7 @@ export default function App({ navigation }) {
               source={require('../../../assets/images/loginlogo.png')} // Logo resmi
               style={styles.logo}
             />
-            <Text style={styles.loginText}>HEALTH CENTER</Text>
+            <Text style={styles.loginText}>SağlıkNet</Text>
           </View>
 
           {/* Giriş için input alanları ve buton */}
@@ -120,7 +120,7 @@ export default function App({ navigation }) {
             />
             <TextInput
               style={styles.input}
-              placeholder='Password'
+              placeholder='Şifre'
               placeholderTextColor="#aaaaaa"
               secureTextEntry
               autoCapitalize="none"

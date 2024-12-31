@@ -184,4 +184,43 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  adminContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  adminHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingTop: 20,
+  },
+  adminProfileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  adminDoctorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  adminDoctorEmail: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  adminLogoutButton: {
+    marginBottom: 30,
+    padding: 15,
+    width: 200,
+    height: 50,
+    borderRadius: 30,
+    backgroundColor: '#ff5555',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 'auto'
+  },
+  adminLogoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

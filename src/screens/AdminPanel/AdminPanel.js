@@ -1,26 +1,64 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
+import { DoctorProvider, useDoctor } from '../../context/DoctorContext';
+import styles from './styles';
 
 import HastaListesi from './HastaListesi/HastaListesi';
 import TahlilEkle from './TahlilEkle/TahlilEkle';
 import HastaEkle from './HastaEkle/HastaEkle';
 import Tahliller from './Tahliller/Tahliller';
+import KilavuzEkle from './KilavuzEkle/KilavuzEkle';
+import Settings from './Settings/Settings';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function AdminPanel() {
-  const [doctorName, setDoctorName] = useState('');
-  const [doctorEmail, setDoctorEmail] = useState('');
-  const [doctorGender, setDoctorGender] = useState('');
-  const [users, setUsers] = useState([]); 
+  return (
+    <DoctorProvider>
+      <AdminPanelContent />
+    </DoctorProvider>
+  );
+}
+
+function AdminPanelContent() {
   const navigation = useNavigation();
+  const { 
+    doctorName, setDoctorName, 
+    doctorEmail, setDoctorEmail, 
+    doctorGender, setDoctorGender 
+  } = useDoctor();
+
+  React.useEffect(() => {
+    const fetchDoctorData = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        setDoctorEmail(currentUser.email);
+
+        try {
+          const doctorRef = doc(db, 'doctors', currentUser.uid);
+          const doctorDoc = await getDoc(doctorRef);
+          if (doctorDoc.exists()) {
+            const doctorData = doctorDoc.data();
+            setDoctorName(doctorData.fullname);
+            setDoctorGender(doctorData.cinsiyet);
+          } else {
+            console.log('Doktor bulunamadı');
+          }
+        } catch (error) {
+          console.error('Hata:', error);
+        }
+      }
+    };
+
+    fetchDoctorData();
+  }, [setDoctorEmail, setDoctorName, setDoctorGender]);
 
   const getProfileImage = () => {
     const gender = (doctorGender || '').toLowerCase().trim();
@@ -45,64 +83,19 @@ export default function AdminPanel() {
       });
   };
 
-  useEffect(() => {
-    const fetchDoctorData = async () => {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setDoctorEmail(currentUser.email);
-
-        try {
-          const doctorRef = doc(db, 'doctors', currentUser.uid);
-          const doctorDoc = await getDoc(doctorRef);
-          if (doctorDoc.exists()) {
-            const doctorData = doctorDoc.data();
-            setDoctorName(doctorData.fullname);
-            setDoctorGender(doctorData.cinsiyet);
-          } else {
-            console.log('Doktor bulunamadı');
-          }
-        } catch (error) {
-          console.error('Hata:', error);
-        }
-      }
-    };
-
-    fetchDoctorData();
-  }, []);
-
-  useEffect(() => {
-    const fetchAllUsers = async () => {
-      try {
-        const usersRef = collection(db, "users");
-        const querySnapshot = await getDocs(usersRef);
-
-        const usersList = [];
-        querySnapshot.forEach((doc) => {
-          usersList.push(doc.data());
-        });
-
-        setUsers(usersList);
-      } catch (error) {
-        console.error('Hata:', error);
-      }
-    };
-
-    fetchAllUsers();
-  }, []);
-
   const CustomDrawerContent = (props) => (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
-        <View style={styles.header}>
-          <Image source={getProfileImage()} style={styles.profileImage} />
-          <Text style={styles.doctorName}>{doctorName}</Text>
-          <Text style={styles.doctorEmail}>{doctorEmail}</Text>
+        <View style={styles.adminHeader}>
+          <Image source={getProfileImage()} style={styles.adminProfileImage} />
+          <Text style={styles.adminDoctorName}>{doctorName}</Text>
+          <Text style={styles.adminDoctorEmail}>{doctorEmail}</Text>
         </View>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Çıkış Yap</Text>
+      <TouchableOpacity style={styles.adminLogoutButton} onPress={handleLogout}>
+        <Text style={styles.adminLogoutText}>Çıkış Yap</Text>
       </TouchableOpacity>
     </View>
   );
@@ -129,6 +122,16 @@ export default function AdminPanel() {
         component={HastaEkle}
         options={{ title: 'Hasta Ekle', headerShown: false }}
       />
+      <Stack.Screen
+        name="KilavuzEkle"
+        component={KilavuzEkle}
+        options={{ title: 'Kılavuz Ekle', headerShown: false }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={Settings}
+        options={{ title: 'Ayarlar', headerShown: false }}
+      />
     </Stack.Navigator>
   );
 
@@ -139,45 +142,9 @@ export default function AdminPanel() {
     >
       <Drawer.Screen name="Hasta Listesi" component={HomeStack} />
       <Drawer.Screen name="Tahlil Ekle" component={TahlilEkle} />
-      <Drawer.Screen name="Hasta Ekle" component={HastaEkle} />
+      {/*<Drawer.Screen name="Hasta Ekle" component={HastaEkle} />*/}
+      <Drawer.Screen name="Kılavuz Ekle" component={KilavuzEkle} />
+      <Drawer.Screen name="Ayarlar" component={Settings} />
     </Drawer.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingTop: 20,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  doctorName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  doctorEmail: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  logoutButton: {
-    marginBottom: 30,
-    padding: 15,
-    width: 200,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: '#ff5555',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 'auto'
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

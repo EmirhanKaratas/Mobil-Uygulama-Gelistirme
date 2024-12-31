@@ -2,65 +2,80 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { auth, db } from '../../../firebase/config';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { updateEmail, updatePassword } from 'firebase/auth';
+import { updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import styles from './styles';
+import { useDoctor } from '../../../context/DoctorContext';
 
 export default function Settings({ navigation }) {
+    const { setDoctorName } = useDoctor();
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchDoctorData = async () => {
             const currentUser = auth.currentUser;
             if (currentUser) {
                 try {
-                    const userRef = doc(db, 'users', currentUser.uid);
-                    const userDoc = await getDoc(userRef);
-                    if (userDoc.exists()) {
-                        const userData = userDoc.data();
-                        setFullName(userData.fullName || '');
+                    const doctorRef = doc(db, 'doctors', currentUser.uid);
+                    const doctorDoc = await getDoc(doctorRef);
+                    if (doctorDoc.exists()) {
+                        const doctorData = doctorDoc.data();
+                        setFullName(doctorData.fullname || '');
                         setEmail(currentUser.email || '');
                     }
                 } catch (error) {
-                    console.error('Kullanıcı bilgileri getirilemedi:', error);
+                    console.error('Doktor bilgileri getirilemedi:', error);
                 }
             }
         };
 
-        fetchUserData();
+        fetchDoctorData();
     }, []);
+
+    const reauthenticate = async (currentPassword) => {
+        const user = auth.currentUser;
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+    };
+
+    const promptForPassword = () => {
+        setShowCurrentPassword(true);
+    };
 
     const handleUpdate = async () => {
         const currentUser = auth.currentUser;
         if (!currentUser) return;
 
         try {
-            const userRef = doc(db, 'users', currentUser.uid);
+            const doctorRef = doc(db, 'doctors', currentUser.uid);
             
             // Email güncellemesi
             if (email && email !== currentUser.email) {
+                if (!currentPassword) {
+                    promptForPassword();
+                    return;
+                }
+
                 try {
-                    // Önce Authentication'da email'i güncelle
+                    await reauthenticate(currentPassword);
                     await updateEmail(currentUser, email);
                     
-                    // Sonra Firestore'u güncelle
-                    await updateDoc(userRef, {
-                        fullName,
+                    await updateDoc(doctorRef, {
+                        fullname: fullName,
                         email
                     });
 
-                    // Başarılı mesajı göster ve yeniden giriş yaptır
-                     Alert.alert(
+                    Alert.alert(
                         'Başarılı',
                         'E-posta adresiniz güncellendi. Güvenlik nedeniyle yeniden giriş yapmanız gerekmektedir.',
                         [
                             {
                                 text: 'Tamam',
                                 onPress: () => {
-                                    // Oturumu kapat ve login sayfasına yönlendir
                                     auth.signOut().then(() => {
                                         navigation.reset({
                                             index: 0,
@@ -75,24 +90,9 @@ export default function Settings({ navigation }) {
                 } catch (emailError) {
                     console.error('Email güncelleme hatası:', emailError);
                     
-                    if (emailError.code === 'auth/requires-recent-login') {
-                        Alert.alert(
-                            'Yeniden Giriş Gerekli',
-                            'E-posta adresini güncellemek için lütfen tekrar giriş yapın.',
-                            [
-                                {
-                                    text: 'Tamam',
-                                    onPress: () => {
-                                        auth.signOut().then(() => {
-                                            navigation.reset({
-                                                index: 0,
-                                                routes: [{ name: 'Login' }],
-                                            });
-                                        });
-                                    },
-                                },
-                            ]
-                        );
+                    if (emailError.code === 'auth/wrong-password') {
+                        Alert.alert('Hata', 'Girdiğiniz mevcut şifre yanlış.');
+                        setCurrentPassword('');
                     } else if (emailError.code === 'auth/invalid-email') {
                         Alert.alert('Hata', 'Geçerli bir e-posta adresi giriniz.');
                     } else if (emailError.code === 'auth/email-already-in-use') {
@@ -106,9 +106,10 @@ export default function Settings({ navigation }) {
 
             // Sadece isim güncellemesi
             try {
-                await updateDoc(userRef, {
-                    fullName
+                await updateDoc(doctorRef, {
+                    fullname: fullName
                 });
+                setDoctorName(fullName); // Context'teki ismi güncelle
                 Alert.alert('Başarılı', 'Bilgileriniz güncellendi.');
             } catch (error) {
                 console.error('İsim güncelleme hatası:', error);
@@ -116,9 +117,9 @@ export default function Settings({ navigation }) {
             }
 
             // Şifre güncellemesi
-            if (password || confirmPassword) {
-                if (password !== confirmPassword) {
-                    Alert.alert('Hata', 'Girdiğiniz şifreler eşleşmiyor.');
+            if (password) {
+                if (!currentPassword) {
+                    promptForPassword();
                     return;
                 }
 
@@ -128,30 +129,17 @@ export default function Settings({ navigation }) {
                 }
 
                 try {
+                    await reauthenticate(currentPassword);
                     await updatePassword(currentUser, password);
-                    //Alert.alert('Başarılı', 'Şifreniz güncellendi.');
+                    Alert.alert('Başarılı', 'Şifreniz güncellendi.');
                     setPassword('');
-                    setConfirmPassword('');
+                    setCurrentPassword('');
+                    setShowCurrentPassword(false);
                 } catch (passwordError) {
                     console.error('Şifre güncelleme hatası:', passwordError);
-                    if (passwordError.code === 'auth/requires-recent-login') {
-                        Alert.alert(
-                            'Yeniden Giriş Gerekli',
-                            'Şifrenizi güncellemek için lütfen tekrar giriş yapın.',
-                            [
-                                {
-                                    text: 'Tamam',
-                                    onPress: () => {
-                                        auth.signOut().then(() => {
-                                            navigation.reset({
-                                                index: 0,
-                                                routes: [{ name: 'Login' }],
-                                            });
-                                        });
-                                    },
-                                },
-                            ]
-                        );
+                    if (passwordError.code === 'auth/wrong-password') {
+                        Alert.alert('Hata', 'Girdiğiniz mevcut şifre yanlış.');
+                        setCurrentPassword('');
                     } else {
                         Alert.alert('Hata', 'Şifre güncellenirken bir hata oluştu.');
                     }
@@ -175,9 +163,6 @@ export default function Settings({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('UserPanel')}>
-                <MaterialIcons name="arrow-back" size={32} color="black" />
-            </TouchableOpacity>
             <Text style={styles.label}>Ad Soyad:</Text>
             <TextInput
                 style={styles.input}
@@ -192,21 +177,25 @@ export default function Settings({ navigation }) {
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
-            <Text style={styles.label}>Şifre:</Text>
+            {showCurrentPassword && (
+                <>
+                    <Text style={styles.label}>Mevcut Şifre:</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={currentPassword}
+                        onChangeText={(text) => setCurrentPassword(text)}
+                        secureTextEntry
+                        placeholder="Güvenlik için mevcut şifrenizi girin"
+                    />
+                </>
+            )}
+            <Text style={styles.label}>Yeni Şifre:</Text>
             <TextInput
                 style={styles.input}
                 value={password}
                 onChangeText={(text) => setPassword(text)}
                 secureTextEntry
                 placeholder="Yeni şifre (opsiyonel)"
-            />
-            <Text style={styles.label}>Şifre Tekrar:</Text>
-            <TextInput
-                style={styles.input}
-                value={confirmPassword}
-                onChangeText={(text) => setConfirmPassword(text)}
-                secureTextEntry
-                placeholder="Yeni şifre tekrar"
             />
             <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
                 <Text style={styles.updateButtonText}>Bilgileri Güncelle</Text>

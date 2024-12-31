@@ -17,7 +17,7 @@ export default StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 16,
-        marginBottom: 16,
+        marginBottom: 18,
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'stretch',
@@ -42,6 +42,7 @@ export default StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
+        marginTop: 5,
         gap: 8,
     },
     tahlilButton: {
