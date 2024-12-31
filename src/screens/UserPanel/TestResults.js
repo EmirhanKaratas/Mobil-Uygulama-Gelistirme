@@ -48,14 +48,14 @@ export default function TestResults({ route }) {
       {Object.entries(tahlil.karsilastirma).map(([klavuzAdi, testler]) => (
         <View key={klavuzAdi} style={styles.klavuzBox}>
           <Text style={styles.klavuzHeader}>{klavuzAdi.toUpperCase()}</Text>
-          {Object.keys(testler).map((testAdi) => {
+          {Object.keys(testler).filter(testAdi => !testAdi.endsWith('_ref')).map((testAdi) => {
             // Değer, durum ve referansları ayır
             const deger = tahlil.values[testAdi];
             const durum = testler[testAdi]; // Örneğin: 'düşük', 'normal', 'yüksek'
             const referans = testler[`${testAdi}_ref`]; // Referans aralığı (min, max)
 
+            // Eğer bu test için değer ve referans yoksa, gösterme
             if (!deger || !referans) {
-              console.error(`Eksik veri:`, { deger, referans });
               return null;
             }
 

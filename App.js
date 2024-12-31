@@ -7,8 +7,8 @@ import Login from './src/screens/Login/Login';
 import AdminPanel from './src/screens/AdminPanel/AdminPanel';
 import SignIn from './src/screens/SignIn/SignIn';
 //import UserDetails from './src/screens/AdminPanel/UserDetails/UserDetails';
-import TestResults from './src/screens/kullaniciPanel/TestResults';
-import UserPanel from './src/screens/kullaniciPanel/UserPanel';
+import TestResults from './src/screens/UserPanel/TestResults';
+import UserPanel from './src/screens/UserPanel/UserPanel';
 
 const Stack = createStackNavigator();
 

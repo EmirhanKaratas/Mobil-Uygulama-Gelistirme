@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, Image ,TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase/config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -18,31 +18,31 @@ const Stack = createNativeStackNavigator();
 export default function AdminPanel() {
   const [doctorName, setDoctorName] = useState('');
   const [doctorEmail, setDoctorEmail] = useState('');
-  const navigation = useNavigation(); // useNavigation hook'unu kullan
+  const [users, setUsers] = useState([]); // users state'ini ekledim
+  const navigation = useNavigation();
 
   const handleLogout = () => {
     auth.signOut()
       .then(() => {
         console.log('Çıkış yapıldı.');
-        navigation.navigate('Login'); // Giriş ekranına yönlendir
+        navigation.navigate('Login');
       })
       .catch((error) => {
         console.error('Çıkış yapılırken bir hata oluştu:', error);
       });
   };
-  
 
   useEffect(() => {
     const fetchDoctorData = async () => {
-      const currentUser = auth.currentUser; // Giriş yapan doktor icin
+      const currentUser = auth.currentUser;
       if (currentUser) {
-        setDoctorEmail(currentUser.email); // Doktorun emailini kaydeder
+        setDoctorEmail(currentUser.email);
 
         try {
           const doctorRef = doc(db, 'doctors', currentUser.uid);
           const doctorDoc = await getDoc(doctorRef);
           if (doctorDoc.exists()) {
-            setDoctorName(doctorDoc.data().fullname); // Doktor adını kaydeder
+            setDoctorName(doctorDoc.data().fullname);
           } else {
             console.log('Doktor bulunamadı');
           }
@@ -55,19 +55,18 @@ export default function AdminPanel() {
     fetchDoctorData();
   }, []);
 
-  // Tüm kullanıcıları çekmek icin
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const usersRef = collection(db, "users"); // 'users' koleksiyonunu referans al
+        const usersRef = collection(db, "users");
         const querySnapshot = await getDocs(usersRef);
 
         const usersList = [];
         querySnapshot.forEach((doc) => {
-          usersList.push(doc.data()); // Kullanıcıları listeye ekle
+          usersList.push(doc.data());
         });
 
-        setUsers(usersList); // Kullanıcıları state'e kaydet
+        setUsers(usersList);
       } catch (error) {
         console.error('Hata:', error);
       }
@@ -75,8 +74,6 @@ export default function AdminPanel() {
 
     fetchAllUsers();
   }, []);
-
-
 
   const CustomDrawerContent = (props) => (
     <View style={{ flex: 1 }}>
@@ -92,7 +89,6 @@ export default function AdminPanel() {
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
 
-      {/* Çıkış Butonu */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Çıkış Yap</Text>
       </TouchableOpacity>
@@ -116,7 +112,6 @@ export default function AdminPanel() {
         component={Tahliller}
         options={{ title: 'Tahlil Sonuçları', headerShown: false }}
       />
-      
       <Stack.Screen
         name="HastaEkle"
         component={HastaEkle}
@@ -132,7 +127,6 @@ export default function AdminPanel() {
     >
       <Drawer.Screen name="Hasta Listesi" component={HomeStack} />
       <Drawer.Screen name="Tahlil Ekle" component={TahlilEkle} />
-      {/*<Drawer.Screen name="Tahlil Sonuçları" component={Tahliller} />*/}
       <Drawer.Screen name="Hasta Ekle" component={HastaEkle} />
     </Drawer.Navigator>
   );
@@ -161,13 +155,13 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginBottom: 30,
     padding: 15,
-    width:200,
-    height:50,
-    borderRadius:30,
+    width: 200,
+    height: 50,
+    borderRadius: 30,
     backgroundColor: '#ff5555',
     alignItems: 'center',
     justifyContent: 'center',
-    margin:'auto'
+    margin: 'auto'
   },
   logoutText: {
     color: '#fff',

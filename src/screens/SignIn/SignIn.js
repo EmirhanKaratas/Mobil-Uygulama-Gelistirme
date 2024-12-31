@@ -5,6 +5,7 @@ import styles from './styles';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 // E-posta formatını kontrol etmek için fonksiyon
 const isValidEmail = (email) => {
@@ -13,12 +14,20 @@ const isValidEmail = (email) => {
 };
 
 export default function App({ navigation }) {
-
-    // Kullanıcının tam adını, e-postasını ve şifrelerini tutmak için state tanımları
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
+    const [birthDate, setBirthDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [cinsiyet, setCinsiyet] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const onDateChange = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setBirthDate(selectedDate);
+        }
+    };
 
     // Kullanıcıyı giriş ekranına yönlendiren fonksiyon
     const onFooterLinkPress = () => {
@@ -27,11 +36,14 @@ export default function App({ navigation }) {
 
     // Kayıt işlemini gerçekleştiren asenkron fonksiyon
     const onRegisterPress = async () => {
+        if (!fullName || !email || !password || !confirmPassword || !cinsiyet) {
+            Alert.alert('Eksik Alan', 'Lütfen tüm alanları doldurun');
+            return;
+        }
+
         // E-posta geçerliliğini kontrol et
         if (!isValidEmail(email)) {
-            console.log(error);
             Alert.alert("Hata", "Geçerli bir e-posta adresi giriniz.");
-            
             return;
         }
 
@@ -41,7 +53,13 @@ export default function App({ navigation }) {
             return;
         }
 
-        // Kullanıcıyı Firebase Authentication ile oluştur
+        // Doğum tarihi kontrolü
+        const today = new Date();
+        if (birthDate > today) {
+            Alert.alert('Hata', 'Doğum tarihi bugünden ileri bir tarih olamaz.');
+            return;
+        }
+
         try {
             // Firebase Authentication ile kullanıcı oluştur
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -52,6 +70,8 @@ export default function App({ navigation }) {
                 id: uid,
                 email,
                 fullName,
+                birthDate,
+                cinsiyet,
                 role: 'user',
             };
 
@@ -69,68 +89,94 @@ export default function App({ navigation }) {
             <KeyboardAwareScrollView
                 style={{ flex: 1, width: '100%' }}
                 keyboardShouldPersistTaps="always">
-                {/* Arka plan resmi */}
                 <ImageBackground
                     source={require('../../../assets/images/loginbackground.png')}
                     style={styles.background}
                     resizeMode="cover"
                 >
-                    {/* Uygulama logosu */}
                     <Image
                         style={styles.logo}
                         source={require('../../../assets/login.jpg')}
                     />
-                    {/* Tam ad giriş alanı */}
                     <TextInput
                         style={styles.input}
-                        placeholder='Full Name'
+                        placeholder='Ad Soyad'
                         placeholderTextColor="#aaaaaa"
                         onChangeText={(text) => setFullName(text)}
                         value={fullName}
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* E-posta giriş alanı */}
+
+                    <TouchableOpacity
+                        style={styles.dateButton}
+                        onPress={() => setShowDatePicker(true)}>
+                        <Text style={styles.dateButtonText}>
+                            Doğum Tarihi: {birthDate.toLocaleDateString()}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={birthDate}
+                            mode="date"
+                            display="default"
+                            onChange={onDateChange}
+                            maximumDate={new Date()}
+                        />
+                    )}
+
                     <TextInput
                         style={styles.input}
-                        placeholder='E-mail'
+                        placeholder='Cinsiyet'
+                        placeholderTextColor="#aaaaaa"
+                        onChangeText={(text) => setCinsiyet(text)}
+                        value={cinsiyet}
+                        underlineColorAndroid="transparent"
+                        autoCapitalize="none"
+                    />
+
+                    <TextInput
+                        style={styles.input}
+                        placeholder='E-posta'
                         placeholderTextColor="#aaaaaa"
                         onChangeText={(text) => setEmail(text)}
                         value={email}
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
+                        keyboardType="email-address"
                     />
-                    {/* Şifre giriş alanı */}
+
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
                         secureTextEntry
-                        placeholder='Password'
+                        placeholder='Şifre'
                         onChangeText={(text) => setPassword(text)}
                         value={password}
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Şifre onay giriş alanı */}
+
                     <TextInput
                         style={styles.input}
                         placeholderTextColor="#aaaaaa"
                         secureTextEntry
-                        placeholder='Confirm Password'
+                        placeholder='Şifreyi Onayla'
                         onChangeText={(text) => setConfirmPassword(text)}
                         value={confirmPassword}
                         underlineColorAndroid="transparent"
                         autoCapitalize="none"
                     />
-                    {/* Kayıt ol butonu */}
+
                     <TouchableOpacity
                         style={styles.button}
                         onPress={onRegisterPress}>
                         <Text style={styles.buttonTitle}>Hesap Oluştur</Text>
                     </TouchableOpacity>
-                    {/* Giriş ekranına yönlendiren alt bilgi */}
+
                     <View style={styles.footerView}>
-                        <Text style={styles.footerText}>Hesap oluşturmaya hazır mısınız? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text></Text>
+                        <Text style={styles.footerText}>Hesabınız var mı? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text></Text>
                     </View>
                 </ImageBackground>
             </KeyboardAwareScrollView>
