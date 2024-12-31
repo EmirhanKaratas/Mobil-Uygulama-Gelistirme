@@ -18,8 +18,15 @@ const Stack = createNativeStackNavigator();
 export default function AdminPanel() {
   const [doctorName, setDoctorName] = useState('');
   const [doctorEmail, setDoctorEmail] = useState('');
-  const [users, setUsers] = useState([]); // users state'ini ekledim
+  const [doctorGender, setDoctorGender] = useState('');
+  const [users, setUsers] = useState([]); 
   const navigation = useNavigation();
+
+  const getProfileImage = () => {
+    return doctorGender === 'Kadın' 
+      ? require('../../../assets/femaleprofile.png')
+      : require('../../../assets/maleprofile.png');
+  };
 
   const handleLogout = () => {
     auth.signOut()
@@ -42,7 +49,9 @@ export default function AdminPanel() {
           const doctorRef = doc(db, 'doctors', currentUser.uid);
           const doctorDoc = await getDoc(doctorRef);
           if (doctorDoc.exists()) {
-            setDoctorName(doctorDoc.data().fullname);
+            const doctorData = doctorDoc.data();
+            setDoctorName(doctorData.fullname);
+            setDoctorGender(doctorData.cinsiyet);
           } else {
             console.log('Doktor bulunamadı');
           }
@@ -80,11 +89,11 @@ export default function AdminPanel() {
       <DrawerContentScrollView {...props}>
         <View style={styles.header}>
           <Image
-            source={require('../../../assets/merve.png')}
-            style={styles.image}
+            source={getProfileImage()}
+            style={styles.profileImage}
           />
-          <Text style={styles.title}>{doctorName || 'Loading...'}</Text>
-          <Text style={styles.email}>{doctorEmail || 'Loading...'}</Text>
+          <Text style={styles.doctorName}>{doctorName}</Text>
+          <Text style={styles.doctorEmail}>{doctorEmail}</Text>
         </View>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
@@ -138,17 +147,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingTop: 20,
   },
-  image: {
+  profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 10,
   },
-  title: {
+  doctorName: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  email: {
+  doctorEmail: {
     fontSize: 14,
     color: 'gray',
   },

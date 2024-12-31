@@ -134,6 +134,8 @@ const Tahliller = ({ route }) => {
                         {renderKilavuzSonuclari(tahlil, 'klavuz1')}
                         {renderKilavuzSonuclari(tahlil, 'klavuz2')}
                         {renderKilavuzSonuclari(tahlil, 'klavuz3')}
+                        {renderKilavuzSonuclari(tahlil, 'klavuz4')}
+                        {renderKilavuzSonuclari(tahlil, 'klavuz5')}
                     </View>
                 ))
             )}

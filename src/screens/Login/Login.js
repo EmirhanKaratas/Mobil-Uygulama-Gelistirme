@@ -131,7 +131,8 @@ export default function App({ navigation }) {
               <Text style={styles.buttonText}>Giriş Yap</Text> {/* Giriş yap butonu */}
             </TouchableOpacity>
             <View style={styles.footerView}>
-              <Text style={styles.footerText}>Hesabınız yok mu? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Kayıt Ol</Text></Text>
+              <Text style={styles.footerText}>Hesabınız yok mu? </Text>
+              <Text onPress={onFooterLinkPress} style={styles.footerLink}>Kayıt Ol</Text>
             </View>
           </View>
         </ImageBackground>

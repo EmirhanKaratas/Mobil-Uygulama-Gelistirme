@@ -6,7 +6,6 @@ import { db } from '../../firebase/config';
 const TahlilEkle = () => {
     const [aramaAdi, setAramaAdi] = useState('');
     const [bulunanHasta, setBulunanHasta] = useState(null);
-    const [hastaYas, setHastaYas] = useState(''); 
     const [tahlilDegerleri, setTahlilDegerleri] = useState({
         IgA: '',
         IgG: '',
@@ -17,6 +16,38 @@ const TahlilEkle = () => {
         IgM: ''
     });
 
+    // Yaş hesaplama fonksiyonu
+    const calculateAgeInMonths = (birthDate) => {
+        const today = new Date();
+        const birth = new Date(birthDate.seconds * 1000); // Firebase Timestamp'i Date'e çevir
+        
+        let months = (today.getFullYear() - birth.getFullYear()) * 12;
+        months -= birth.getMonth();
+        months += today.getMonth();
+        
+        // Ayın gününe göre düzeltme
+        if (today.getDate() < birth.getDate()) {
+            months--;
+        }
+        
+        return months;
+    };
+
+    // Yaş gösterimi için formatlama fonksiyonu
+    const formatAge = (months) => {
+        if (months < 12) {
+            return `${months} aylık`;
+        } else {
+            const years = Math.floor(months / 12);
+            const remainingMonths = months % 12;
+            if (remainingMonths === 0) {
+                return `${years} yaşında`;
+            } else {
+                return `${years} yaş ${remainingMonths} ay`;
+            }
+        }
+    };
+
     // Kılavuz değerleriyle karşılaştırma yapma
     const kilavuzKarsilastir = async (ageInMonths, values) => {
         try {
@@ -26,7 +57,9 @@ const TahlilEkle = () => {
             const sonuclar = {
                 klavuz1: {},
                 klavuz2: {},
-                klavuz3: {}
+                klavuz3: {},
+                klavuz4: {},
+                klavuz5: {}
             };
 
             // Her bir kılavuz için kontrol et
@@ -93,9 +126,16 @@ const TahlilEkle = () => {
 
             const hastaDoc = snapshot.docs[0];
             const hastaData = hastaDoc.data();
+            
+            if (!hastaData.birthDate) {
+                Alert.alert('Hata', 'Hastanın doğum tarihi bilgisi eksik');
+                return;
+            }
+
             setBulunanHasta({
                 id: hastaDoc.id,
-                ...hastaData
+                ...hastaData,
+                ageInMonths: calculateAgeInMonths(hastaData.birthDate)
             });
         } catch (error) {
             Alert.alert('Hata', 'Hasta arama sırasında bir hata oluştu');
@@ -110,8 +150,8 @@ const TahlilEkle = () => {
             return;
         }
 
-        if (!hastaYas) {
-            Alert.alert('Hata', 'Lütfen hastanın yaşını girin');
+        if (!bulunanHasta.birthDate) {
+            Alert.alert('Hata', 'Hastanın doğum tarihi bilgisi eksik');
             return;
         }
 
@@ -127,14 +167,8 @@ const TahlilEkle = () => {
         }
 
         try {
-            // Yaşı aya çevir
-            const ageInMonths = parseFloat(hastaYas) * 12;
-            console.log('Yaş (yıl):', hastaYas, 'Yaş (ay):', ageInMonths);
-
-            if (isNaN(ageInMonths)) {
-                Alert.alert('Hata', 'Geçerli bir yaş giriniz');
-                return;
-            }
+            const ageInMonths = bulunanHasta.ageInMonths;
+            console.log('Yaş (ay):', ageInMonths);
 
             // Kılavuz değerleriyle karşılaştırma
             const karsilastirmaSonuclari = await kilavuzKarsilastir(ageInMonths, sayisalDegerler);
@@ -146,15 +180,13 @@ const TahlilEkle = () => {
                 fullName: bulunanHasta.fullName,
                 values: sayisalDegerler,
                 ageInMonths: ageInMonths,
+                formattedAge: formatAge(ageInMonths),
+                birthDate: bulunanHasta.birthDate,
                 karsilastirma: karsilastirmaSonuclari
             });
 
-            Alert.alert('Başarılı', 'Tahlil sonuçları başarıyla kaydedildi');
-            
-            // Formu temizle
-            setBulunanHasta(null);
-            setAramaAdi('');
-            setHastaYas('');
+            Alert.alert('Başarılı', 'Tahlil sonuçları kaydedildi');
+            // Form alanlarını temizle
             setTahlilDegerleri({
                 IgA: '',
                 IgG: '',
@@ -164,9 +196,11 @@ const TahlilEkle = () => {
                 IgG4: '',
                 IgM: ''
             });
+            setBulunanHasta(null);
+            setAramaAdi('');
         } catch (error) {
-            Alert.alert('Hata', 'Tahlil kaydedilirken bir hata oluştu');
-            console.error('Kaydetme hatası:', error);
+            console.error('Tahlil kaydetme hatası:', error);
+            Alert.alert('Hata', 'Tahlil sonuçları kaydedilirken bir hata oluştu');
         }
     };
 
@@ -189,17 +223,8 @@ const TahlilEkle = () => {
                     <Text style={styles.hastaBaslik}>Seçili Hasta:</Text>
                     <Text style={styles.hastaAdi}>{bulunanHasta.fullName}</Text>
                     
-                    {/* Yaş girişi */}
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Yaş (yıl):</Text>
-                        <TextInput
-                            style={styles.input}
-                            keyboardType="numeric"
-                            value={hastaYas}
-                            onChangeText={setHastaYas}
-                            placeholder="Yaş"
-                        />
-                    </View>
+                    {/* Yaş gösterimi */}
+                    <Text style={styles.label}>Yaş: {formatAge(bulunanHasta.ageInMonths)}</Text>
 
                     {/* Tahlil değerleri girişi */}
                     {Object.keys(tahlilDegerleri).map((key) => (

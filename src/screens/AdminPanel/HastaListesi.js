@@ -40,17 +40,28 @@ const HastaListesi = () => {
     };
 
     const renderHastaItem = ({ item }) => (
-        <View style={styles.hastaCard}>
-            <View style={styles.hastaInfo}>
+        <View style={styles.hastaItem}>
+            <View style={styles.hastaDetay}>
                 <Text style={styles.hastaAdi}>{item.fullName}</Text>
                 <Text style={styles.hastaBilgi}>Email: {item.email}</Text>
             </View>
-            <TouchableOpacity
-                style={styles.tahlilButton}
-                onPress={() => tahlilleriGoruntule(item)}
-            >
-                <Text style={styles.buttonText}>Tahliller</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                    style={styles.tahlilButton}
+                    onPress={() => tahlilleriGoruntule(item)}
+                >
+                    <Text style={styles.buttonText}>Tahliller</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.tahlilButton, { backgroundColor: '#4CAF50' }]}
+                    onPress={() => navigation.navigate('TahlilKarsilastirma', { 
+                        hastaId: item.id, 
+                        hastaAdi: item.fullName 
+                    })}
+                >
+                    <Text style={styles.buttonText}>Karşılaştır</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
@@ -87,21 +98,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    hastaCard: {
+    hastaItem: {
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 16,
         marginBottom: 16,
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'stretch',
         elevation: 2,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
     },
-    hastaInfo: {
+    hastaDetay: {
         flex: 1,
     },
     hastaAdi: {
@@ -114,12 +125,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
     },
+    buttonContainer: {
+        flexDirection: 'row',
+        gap: 8,
+    },
     tahlilButton: {
         backgroundColor: '#2196F3',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 6,
-        marginLeft: 16,
     },
     buttonText: {
         color: 'white',

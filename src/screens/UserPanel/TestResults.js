@@ -26,8 +26,10 @@ export default function TestResults({ route }) {
         <Text style={styles.detailValue}>{tahlil.fullName}</Text>
       </View>
       <View style={styles.detailBox}>
-        <Text style={styles.detailLabel}>Yaş (Ay):</Text>
-        <Text style={styles.detailValue}>{tahlil.ageInMonths}</Text>
+        <Text style={styles.detailLabel}>Doğum Tarihi:</Text>
+        <Text style={styles.detailValue}>
+          {new Date(tahlil.birthDate.seconds * 1000).toLocaleDateString('tr-TR')}
+        </Text>
       </View>
       <View style={styles.detailBox}>
         <Text style={styles.detailLabel}>Tarih:</Text>

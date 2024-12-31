@@ -65,15 +65,16 @@ export default StyleSheet.create({
   footerView: {
     flex: 1,
     alignItems: "center",
-    marginTop: 20
-},
-footerText: {
+    marginTop: 20,
+    flexDirection: 'row'
+  },
+  footerText: {
     fontSize: 16,
     color: '#2e2e2d'
-},
-footerLink: {
+  },
+  footerLink: {
     color: "#007BFF",
     fontWeight: "bold",
     fontSize: 16
-}
+  }
 })

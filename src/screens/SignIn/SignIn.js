@@ -176,7 +176,8 @@ export default function App({ navigation }) {
                     </TouchableOpacity>
 
                     <View style={styles.footerView}>
-                        <Text style={styles.footerText}>Hesabınız var mı? <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text></Text>
+                        <Text style={styles.footerText}>Hesabınız var mı? </Text>
+                        <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text>
                     </View>
                 </ImageBackground>
             </KeyboardAwareScrollView>
