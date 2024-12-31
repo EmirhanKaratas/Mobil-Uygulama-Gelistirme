@@ -103,7 +103,7 @@ export default function App({ navigation }) {
               source={require('../../../assets/images/loginlogo.png')} // Logo resmi
               style={styles.logo}
             />
-            <Text style={styles.loginText}>HEALTH CENTER</Text> {/* Başlık */}
+            <Text style={styles.loginText}>HEALTH CENTER</Text>
           </View>
 
           {/* Giriş için input alanları ve buton */}
@@ -128,11 +128,11 @@ export default function App({ navigation }) {
               onChangeText={(text) => setPassword(text)} // Şifre state güncelleme
             />
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Giriş Yap</Text> {/* Giriş yap butonu */}
+              <Text style={styles.buttonText}>Giriş Yap</Text> 
             </TouchableOpacity>
             <View style={styles.footerView}>
               <Text style={styles.footerText}>Hesabınız yok mu? </Text>
-              <Text onPress={onFooterLinkPress} style={styles.footerLink}>Kayıt Ol</Text>
+              <Text onPress={onFooterLinkPress} style={styles.footerLink}> Kayıt Ol</Text>
             </View>
           </View>
         </ImageBackground>

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // MaterialIcons kütüphanesi import edildi
+import styles from './styles';
 
 const KarsilastirmaIkonu = ({ durum }) => {
   switch (durum) {
@@ -15,11 +16,16 @@ const KarsilastirmaIkonu = ({ durum }) => {
   }
 };
 
-export default function TestResults({ route }) {
+export default function TestResults({ route, navigation }) {
   const { tahlil } = route.params;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Geri Düğmesi */}
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('UserPanel')}>
+        <MaterialIcons name="arrow-back" size={32} color="black" />
+      </TouchableOpacity>
+
       <Text style={styles.header}>Tahlil Detayları</Text>
       <View style={styles.detailBox}>
         <Text style={styles.detailLabel}>Ad Soyad:</Text>
@@ -51,12 +57,10 @@ export default function TestResults({ route }) {
         <View key={klavuzAdi} style={styles.klavuzBox}>
           <Text style={styles.klavuzHeader}>{klavuzAdi.toUpperCase()}</Text>
           {Object.keys(testler).filter(testAdi => !testAdi.endsWith('_ref')).map((testAdi) => {
-            // Değer, durum ve referansları ayır
             const deger = tahlil.values[testAdi];
-            const durum = testler[testAdi]; // Örneğin: 'düşük', 'normal', 'yüksek'
-            const referans = testler[`${testAdi}_ref`]; // Referans aralığı (min, max)
+            const durum = testler[testAdi];
+            const referans = testler[`${testAdi}_ref`];
 
-            // Eğer bu test için değer ve referans yoksa, gösterme
             if (!deger || !referans) {
               return null;
             }
@@ -81,76 +85,3 @@ export default function TestResults({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    marginTop:30
-  },
-  detailBox: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  detailLabel: {
-    fontWeight: 'bold',
-    width: 120,
-  },
-  detailValue: {
-    flex: 1,
-  },
-  sectionHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 15,
-  },
-  resultBox: {
-    flexDirection: 'row',
-    marginBottom: 10,
-  },
-  resultLabel: {
-    fontWeight: 'bold',
-    width: 100,
-  },
-  resultValue: {
-    flex: 1,
-  },
-  klavuzBox: {
-    marginVertical: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#f9f9f9',
-  },
-  klavuzHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  klavuzDetailBox: {
-    marginBottom: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  klavuzLabel: {
-    fontWeight: 'bold',
-    width: 100,
-  },
-  klavuzValue: {
-    flex: 1,
-  },
-  referansText: {
-    color: '#888',
-    fontStyle: 'italic',
-    marginLeft: 120, // Değerle hizalı görünüm
-    fontSize:12
-  },
-});

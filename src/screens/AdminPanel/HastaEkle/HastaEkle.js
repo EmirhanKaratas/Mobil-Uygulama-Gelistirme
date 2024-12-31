@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { db, auth } from '../../firebase/config';
+import { db } from '../../../firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import styles from './styles';
 
 // E-posta formatını kontrol etmek için fonksiyon
 const isValidEmail = (email) => {
@@ -88,8 +89,7 @@ const HastaEkle = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../../assets/hastaekle.png')} style={styles.logo} />
-      <Text style={styles.title}>Hasta Ekle</Text>
+      <Image source={require('../../../../assets/hastaekle.png')} style={styles.logo} />
 
       <TextInput
         style={styles.input}
@@ -157,66 +157,5 @@ const HastaEkle = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 20,
-  },
-  logo: {
-    height: 120,
-    width: 120,
-    alignSelf: 'center',
-    margin: 30,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    fontWeight: 'bold',
-  },
-  input: {
-    height: 48,
-    borderRadius: 5,
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    marginTop: 10,
-    marginBottom: 10,
-    paddingLeft: 16,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  dateButton: {
-    height: 48,
-    borderRadius: 5,
-    backgroundColor: 'white',
-    marginTop: 10,
-    marginBottom: 10,
-    paddingLeft: 16,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    justifyContent: 'center',
-  },
-  dateButtonText: {
-    color: '#333',
-  },
-  button: {
-    backgroundColor: '#788eec',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 20,
-    height: 48,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: 'center',
-    width: '100%',
-  },
-  buttonTitle: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default HastaEkle;

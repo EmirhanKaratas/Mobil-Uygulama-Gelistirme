@@ -4,76 +4,88 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-    },
-    background: {
-        flex: 1,
-        width: '100%',
-        alignItems: 'center',
+        alignContent:'center',
         justifyContent: 'center',
+        backgroundColor: '#f5f5f5', // Daha modern bir arka plan rengi
+        padding: 20, // Kenarlara daha fazla boşluk için padding
     },
     logo: {
-        flex: 1,
         height: 120,
         width: 120,
-        alignSelf: "center",
-        margin: 30
+        borderRadius: 60,
+        borderWidth: 2,
+        borderColor: '#788eec', // Logo etrafına çerçeve
+        marginBottom: 30, // Logonun altındaki alanı genişlet
+        margin:'auto',
+        marginTop:100
     },
     input: {
-        height: 48,
-        borderRadius: 5,
-        overflow: 'hidden',
+        height: 50,
+        borderRadius: 10,
         backgroundColor: 'white',
-        marginTop: 10,
-        marginBottom: 10,
-        marginLeft: 30,
-        marginRight: 30,
+        marginVertical: 10,
         paddingLeft: 16,
-        width: '80%'
+        width: '80%', // Ekranda daha iyi hizalama için genişlik
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3.84,
+        elevation: 5, // Android için gölge efekti
+        margin:'auto'
     },
     dateButton: {
-        height: 48,
-        borderRadius: 5,
-        backgroundColor: 'white',
-        marginTop: 10,
-        marginBottom: 10,
-        marginLeft: 30,
-        marginRight: 30,
+        height: 50,
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        marginVertical: 10,
         paddingLeft: 16,
-        width: '80%',
-        justifyContent: 'center'
+        width: '80%', // Ekranda daha iyi hizalama için genişlik
+        justifyContent: 'center',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3.84,
+        elevation: 5, // Android için gölge efekti
+        margin:'auto'
     },
     dateButtonText: {
         color: '#333',
+        fontSize: 16,
     },
     button: {
         backgroundColor: '#788eec',
-        marginLeft: 30,
-        marginRight: 30,
         marginTop: 20,
-        height: 48,
-        borderRadius: 5,
+        height: 50,
+        borderRadius: 25,
         alignItems: "center",
         justifyContent: 'center',
-        width: '80%'
+        width: '80%', // Ekranda daha iyi hizalama için genişlik
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8, // Android için gölge efekti
+        margin:'auto'
     },
     buttonTitle: {
         color: 'white',
-        fontSize: 16,
-        fontWeight: "bold"
+        fontSize: 18,
+        fontWeight: "bold",
     },
     footerView: {
-        flex: 1,
-        alignItems: "center",
-        marginTop: 20,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        marginTop: 30, // Footer'ı daha yukarıda tutmak için margin
+        alignItems: 'center',
+        margin:'auto'
     },
     footerText: {
         fontSize: 16,
-        color: '#2e2e2d'
+        color: '#2e2e2d',
     },
     footerLink: {
         color: "#788eec",
         fontWeight: "bold",
-        fontSize: 16
-    }
+        fontSize: 16,
+        marginLeft: 5,
+    },
 });

@@ -7,10 +7,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 
-import HastaListesi from './HastaListesi';
-import TahlilEkle from './TahlilEkle';
-import HastaEkle from './HastaEkle';
-import Tahliller from './Tahliller';
+import HastaListesi from './HastaListesi/HastaListesi';
+import TahlilEkle from './TahlilEkle/TahlilEkle';
+import HastaEkle from './HastaEkle/HastaEkle';
+import Tahliller from './Tahliller/Tahliller';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -23,9 +23,15 @@ export default function AdminPanel() {
   const navigation = useNavigation();
 
   const getProfileImage = () => {
-    return doctorGender === 'Kadın' 
-      ? require('../../../assets/femaleprofile.png')
-      : require('../../../assets/maleprofile.png');
+    const gender = (doctorGender || '').toLowerCase().trim();
+    switch (gender) {
+      case 'erkek':
+        return require('../../../assets/maleprofile.png');
+      case 'kadın':
+        return require('../../../assets/femaleprofile.png');
+      default:
+        return require('../../../assets/default.png');
+    }
   };
 
   const handleLogout = () => {
@@ -88,10 +94,7 @@ export default function AdminPanel() {
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.header}>
-          <Image
-            source={getProfileImage()}
-            style={styles.profileImage}
-          />
+          <Image source={getProfileImage()} style={styles.profileImage} />
           <Text style={styles.doctorName}>{doctorName}</Text>
           <Text style={styles.doctorEmail}>{doctorEmail}</Text>
         </View>

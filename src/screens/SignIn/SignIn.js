@@ -89,11 +89,7 @@ export default function App({ navigation }) {
             <KeyboardAwareScrollView
                 style={{ flex: 1, width: '100%' }}
                 keyboardShouldPersistTaps="always">
-                <ImageBackground
-                    source={require('../../../assets/images/loginbackground.png')}
-                    style={styles.background}
-                    resizeMode="cover"
-                >
+                
                     <Image
                         style={styles.logo}
                         source={require('../../../assets/login.jpg')}
@@ -179,7 +175,6 @@ export default function App({ navigation }) {
                         <Text style={styles.footerText}>Hesabınız var mı? </Text>
                         <Text onPress={onFooterLinkPress} style={styles.footerLink}>Giriş Yap</Text>
                     </View>
-                </ImageBackground>
             </KeyboardAwareScrollView>
         </View>
     );

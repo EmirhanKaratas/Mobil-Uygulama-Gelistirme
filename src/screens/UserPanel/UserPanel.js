@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Ionicons kütüphanesini ekledik
 import { auth, db } from '../../firebase/config';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
@@ -103,6 +104,9 @@ export default function UserPanel({ navigation }) {
         </View>
       ) : (
         <>
+          <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate('Settings')}>
+            <Ionicons name="settings" size={24} color="white" />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.logoutButton} onPress={() => handleLogout()}>
             <Text style={styles.logoutText}>Çıkış Yap</Text>
           </TouchableOpacity>
@@ -182,5 +186,15 @@ const styles = StyleSheet.create({
   tahlilText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    padding: 10,
+    borderRadius: 30,
+    backgroundColor: '#5555ff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
